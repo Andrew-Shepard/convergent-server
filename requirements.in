@@ -1,0 +1,17 @@
+black==19.10b0
+pytest
+pytest-asyncio
+pip-tools
+uvicorn
+fastapi
+click==8.0.4
+pytest-asyncio
+uvloop
+invoke
+pydantic
+aiopg
+sqlalchemy
+psycopg2
+alembic
+httpx
+respx

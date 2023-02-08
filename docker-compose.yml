@@ -1,0 +1,64 @@
+version: "3.0"
+services:
+  convergent:
+    build: .
+    depends_on: 
+      - db
+    ports: 
+     - "8000:8000"
+    environment:
+      - HTTP_HOST=0.0.0.0
+    env_file:
+      - example.env
+
+  db:
+    container_name: db
+    image: "postgres:12-alpine"
+    env_file:
+      - example.env
+    expose:
+      - "5432"
+
+
+  test_db:
+    container_name: test_db
+    image: "postgres:12-alpine"
+    env_file:
+      - example.env
+    expose:
+      - "5432"
+
+  update-local-db:
+    container_name: update_local_db
+    image: "convergent:latest"
+    restart: always
+    build: .
+    env_file:
+      - example.env
+    entrypoint:  bash /app/utility/db_init.sh
+    depends_on:
+      - db
+  
+  ci:
+    container_name: convergent-ci
+    image: "convergent:latest"
+    build: .
+    ports:
+      - "8000:8000"
+    env_file:
+      - example.env
+    environment:
+      - HTTP_HOST=0.0.0.0
+      - POSTGRES_HOST=db
+      - POSTGRES_PORT=5432
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DATABASE=postgres
+      - CREATEDB=true
+      - POSTGRES_HOST=test_db
+    entrypoint: bash /app/utility/run_tests.sh
+    depends_on:
+      - test_db
+
+volumes:
+  postgresdata:
