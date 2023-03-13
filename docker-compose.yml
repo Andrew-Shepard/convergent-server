@@ -10,7 +10,7 @@ services:
       - HTTP_HOST=0.0.0.0
     env_file:
       - example.env
-
+    
   db:
     container_name: db
     image: "postgres:12-alpine"
@@ -55,10 +55,10 @@ services:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DATABASE=postgres
       - CREATEDB=true
+      - WRITEBIBLE=false
       - POSTGRES_HOST=test_db
+      - USERNAME=user
+      - PASSWORD=password
     entrypoint: bash /app/utility/run_tests.sh
     depends_on:
       - test_db
-
-volumes:
-  postgresdata:

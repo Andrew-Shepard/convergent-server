@@ -6,23 +6,22 @@ ARG VER_PYTHON=""
 ARG VER_PIP=""
 # TODO: Fix s6 exec permissions to get rid of root
 USER root
+WORKDIR /app
+
 # Dependencies
 COPY requirements.txt /app/
 COPY utility/install_packages.sh /tmp
 COPY utility/db_init.sh /tmp
 
-WORKDIR /app
 RUN  chmod +x /tmp/install_packages.sh
 RUN  /tmp/install_packages.sh
 
 RUN pip3 install \
     --disable-pip-version-check \
-    --no-cache-dir \
+--no-cache-dir \
     --no-deps \
     --require-hashes \
     --requirement requirements.txt
-
-COPY . /app
 
 # S6 setup
 ENV S6_OVERLAY_VERSION=3.1.2.1
@@ -34,6 +33,8 @@ RUN tar -C / -Jxpf /tmp/s6-overlay-x86_64.tar.xz
 # Behavior 2 = crash
 ENV SRC_DEF_DIR=/etc/s6-overlay/s6-rc.d \
     S6_BEHAVIOUR_IF_STAGE2_FAILS=2
+
+ADD . /app
 
 RUN set -o nounset -o errexit -o xtrace -o verbose \
     \

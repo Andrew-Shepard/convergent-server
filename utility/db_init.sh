@@ -11,9 +11,18 @@ echo "Response from db!"
 
 if [[ "$CREATEDB" == 'true' ]]; then 
     echo "Setting up database..."
-    cd /app/utility
     python3 /app/utility/manage_db.py create
 fi
 
 cd /app
 alembic upgrade head
+
+if [[ "$CREATEDB" == 'true' ]]; then 
+    echo "Creating bootstrap admin..."
+    python3 /app/utility/manage_db.py add-user
+fi
+
+if [[ "$WRITEBIBLE" == 'true' ]]; then 
+    echo "Writing bible..."
+    python3 /app/utility/manage_db.py add-bible
+fi

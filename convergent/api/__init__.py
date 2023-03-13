@@ -1,15 +1,33 @@
 import logging
 from fastapi import FastAPI
 from convergent.settings import Settings
-from convergent.external.reporter import LogReporter
+from convergent.external.reporter import logger
 from convergent.api.routes import root as root_router
 from convergent.db.dependencies import init_db
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
 
 
 def create_app(settings: Settings):
     app = FastAPI()
-    app.reporter = LogReporter()
+    app.reporter = logger
     app.include_router(root_router)
+    
+    origins = [
+        "http://localhost.tiangolo.com",
+        "https://localhost.tiangolo.com",
+        "http://localhost",
+        "http://localhost:3000",
+    ]
+
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=origins,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+    app.add_middleware(GZipMiddleware, minimum_size=1000)
 
     @app.on_event("startup")
     async def _startup():

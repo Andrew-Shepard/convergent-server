@@ -2,7 +2,7 @@ from aiopg.sa import create_engine, Engine
 from fastapi import Depends
 from convergent.db.repos.user import UserRepo
 from convergent.db.repos.answer import AnswerRepo
-from convergent.db.repos.question import QuestionRepo
+from convergent.db.repos.bible import BibleRepository
 
 _db = None
 CONN_SCHEMA = "postgresql"
@@ -31,13 +31,13 @@ def get_db() -> Engine:
     return _db
 
 
-def get_user_repository(db_engine: Engine = Depends(get_db)) -> UserRepo:
+def get_user_repository(db_engine=Depends(get_db)) -> UserRepo:
     return UserRepo(db=db_engine)
 
 
-def get_anwser_repository(db_engine: Engine = Depends(get_db)) -> AnswerRepo:
+def get_answer_repository(db_engine=Depends(get_db)) -> AnswerRepo:
     return AnswerRepo(db=db_engine)
 
 
-def get_question_repository(db_engine: Engine = Depends(get_db)) -> QuestionRepo:
-    return QuestionRepo(db=db_engine)
+def get_bible_repository(db_engine=Depends(get_db)) -> BibleRepository:
+    return BibleRepository(db=db_engine)

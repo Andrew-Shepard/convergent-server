@@ -15,3 +15,5 @@ psycopg2
 alembic
 httpx
 respx
+bcrypt
+PyJWT==2.6.0

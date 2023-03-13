@@ -12,23 +12,35 @@ docker_build_args = \
 	
 
 black: 
-	black .
+	black utility/
+	black tests/
+	black convergent/
 
 requirements.txt:
-	pip-compile --generate-hashes --quiet requirements.in
+	pip-compile --generate-hashes --quiet -B requirements.in
 
 build:
-	DOCKER_BUILDKIT=1 docker build $(docker_build_args) -t $(main_image) . --no-cache
+	DOCKER_BUILDKIT=1 docker compose build convergent --no-cache
 	
 run: 
-	docker-compose -p convergent up convergent
+	docker compose -p convergent up convergent
 
 setup-local-db:
-	docker-compose -p update-local-db build update-local-db && \
-	docker-compose -p update-local-db up update-local-db
+	docker compose -p update-local-db build update-local-db && \
+	docker compose -p update-local-db up update-local-db
 
 test:
-	docker-compose -p convergent-ci run -e TAG=latest --rm ci
+	docker compose -p convergent-ci run -e TAG=latest --rm ci
+
+prune:
+	docker system prune --volumes --all
 
 purge:
-	docker system prune --volumes
+	docker builder prune -a \
+ 		&& docker compose down --volumes \
+  		&& docker compose down --rmi all -v \
+  		&& docker compose build --no-cache \
+ 		&& docker-compose  -f docker compose.yml up -d --force-recreate
+
+clean:
+	docker rmi -f $(main_image)
