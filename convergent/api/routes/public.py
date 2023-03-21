@@ -107,7 +107,7 @@ async def mark_answered(
     # Mark user as having answered
     # TODO: Verify User vs User Token
     await answer_repo.mark_answered(user=user)
-    return {"answered": "True"}
+    return {"answered": True}
 
 
 @public_router.post(
@@ -119,10 +119,10 @@ async def get_has_answered(
     # Pass partner code
     answer = await answer_repo.get_answered(partner)
     if answer == None:
-        return {"answered": "False"}
+        return {"answered": False}
 
     if answer.answered == True:
         # Return if code has been marked as answered for today
-        return {"answered": "True"}
+        return {"answered": True}
 
-    return {"answered": "False"}
+    return {"answered": False}
